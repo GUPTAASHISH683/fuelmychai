@@ -5,9 +5,7 @@ A lightweight, UPI-based creator support platform for Indian creators.
 ## Monorepo
 
 - `frontend` - React + Tailwind CSS, intended for Vercel
-- `backend` - Node.js + Express + raw `pg`, intended for Railway
-
-## Phase 1 Status
+- `backend` - Node.js + Express + raw `pg`, intended for Render and Supabase
 
 This phase sets up the monorepo, backend boilerplate, PostgreSQL migration, and frontend scaffold.
 
