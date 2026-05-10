@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Fuel My Chai">
+  <rect width="1200" height="630" fill="#fff8ed"/>
+  <circle cx="930" cy="180" r="130" fill="#fde68a"/>
+  <circle cx="210" cy="500" r="110" fill="#fed7aa"/>
+  <rect x="120" y="126" width="760" height="378" rx="24" fill="#ffffff" stroke="#f59e0b" stroke-width="4"/>
+  <text x="180" y="264" fill="#1f2937" font-family="Arial, Helvetica, sans-serif" font-size="76" font-weight="700">Fuel My Chai</text>
+  <text x="184" y="346" fill="#92400e" font-family="Arial, Helvetica, sans-serif" font-size="36">UPI support pages for Indian creators</text>
+  <path d="M912 326h96c0 86-54 142-134 142h-16c-81 0-134-56-134-142V210h188v116Z" fill="#d97706"/>
+  <path d="M912 250h74c44 0 74 30 74 74s-30 74-74 74h-74v-46h70c18 0 30-11 30-28 0-18-12-28-30-28h-70v-46Z" fill="#92400e"/>
+  <rect x="704" y="466" width="244" height="36" rx="18" fill="#92400e"/>
+</svg>
