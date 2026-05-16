@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { api } from '../utils/api.js';
+import { generateFingerprint } from '../utils/fingerprint.js';
 
 const AuthContext = createContext(null);
 
@@ -13,8 +14,17 @@ export function AuthProvider({ children }) {
 
     try {
       const response = await api.get('/api/auth/me');
-      setUser(response.data.user);
-      return response.data.user;
+      const currentUser = response.data.user;
+      setUser(currentUser);
+
+      try {
+        const fingerprint = await generateFingerprint();
+        await api.post('/api/auth/fingerprint', { fingerprint });
+      } catch (fingerprintError) {
+        console.warn('Fingerprint check failed silently');
+      }
+
+      return currentUser;
     } catch (error) {
       setUser(null);
       return null;

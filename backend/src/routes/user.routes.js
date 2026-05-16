@@ -1,6 +1,9 @@
 import { Router } from 'express';
 
 import {
+  checkUpiPrivacy,
+  confirmAge,
+  getAnalytics,
   getMe,
   setUsername,
   updateProfile,
@@ -13,6 +16,9 @@ import { avatarUpload, handleUploadError } from '../middleware/upload.middleware
 const router = Router();
 
 router.get('/me', requireAuth, getMe);
+router.get('/analytics', requireAuth, getAnalytics);
+router.get('/upi-check', requireAuth, checkUpiPrivacy);
+router.post('/confirm-age', requireAuth, confirmAge);
 router.patch('/profile', requireAuth, updateProfile);
 router.post(
   '/avatar',

@@ -1,33 +1,40 @@
+import { Link } from 'react-router-dom';
+
+export function DefaultAvatar({ name }) {
+  const initial = name?.charAt(0)?.toUpperCase() || '?';
+  return (
+    <div className="mx-auto flex size-24 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-orange-500 text-3xl font-bold text-stone-950 shadow-lg ring-2 ring-amber-400/20 sm:mx-0">
+      {initial}
+    </div>
+  );
+}
+
 export function PublicNotFound() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#fffaf3] px-6 text-center text-slate-950">
-      <section className="max-w-md">
-        <p className="text-sm font-semibold uppercase tracking-wide text-amber-700">
-          Fuel My Chai
-        </p>
-        <h1 className="mt-3 text-3xl font-bold">This chai page doesn't exist</h1>
-      </section>
-    </main>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-stone-950 px-6 text-center">
+      <span className="text-6xl">☕</span>
+      <h1 className="mt-6 font-display text-3xl text-white">Page not found</h1>
+      <p className="mt-3 text-white/40">This chai page doesn't exist. Maybe the creator hasn't signed up yet?</p>
+      <Link to="/" className="btn-primary mt-8 px-8 py-3">
+        Create your own page
+      </Link>
+    </div>
   );
 }
 
 export function PublicPageNotReady({ name }) {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#fffaf3] px-6 text-center text-slate-950">
-      <section className="max-w-md">
-        <DefaultAvatar name={name} />
-        <h1 className="mt-5 text-3xl font-bold">
-          This creator hasn't set up their chai page yet
-        </h1>
-      </section>
-    </main>
-  );
-}
-
-export function DefaultAvatar({ name }) {
-  return (
-    <div className="mx-auto flex size-24 items-center justify-center rounded-full bg-amber-100 text-3xl font-bold text-amber-800">
-      {name?.charAt(0)?.toUpperCase() || 'C'}
+    <div className="flex min-h-screen flex-col items-center justify-center bg-stone-950 px-6 text-center">
+      <span className="text-6xl animate-pulse">☕</span>
+      <h1 className="mt-6 font-display text-3xl text-white">
+        {name ? `${name}'s page` : 'This page'} is brewing...
+      </h1>
+      <p className="mt-3 text-white/40">
+        {name ? `${name} hasn't` : "This creator hasn't"} set up their chai page yet. Check back soon!
+      </p>
+      <Link to="/" className="btn-ghost mt-8 px-8 py-3">
+        ← Back to home
+      </Link>
     </div>
   );
 }

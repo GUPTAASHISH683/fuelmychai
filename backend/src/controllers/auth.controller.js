@@ -6,6 +6,7 @@ import {
 } from '../utils/encryption.js';
 import { clearAuthCookie, setAuthCookie, signAuthToken } from '../utils/jwt.js';
 import { httpError } from '../utils/httpError.js';
+import { getIpHash, hashValue, isBanned } from '../utils/fingerprint.js';
 
 function requireEnv(name) {
   const value = process.env[name];
@@ -69,7 +70,7 @@ async function fetchGoogleProfile(accessToken) {
 async function findOrCreateUser(profile) {
   const emailHash = hashLookupValue(profile.email);
   const existingUser = await query(
-    `SELECT id, email, name, username
+    `SELECT id, google_id, email, name, username
      FROM users
      WHERE google_id = $1 OR email_hash = $2`,
     [profile.sub, emailHash]
@@ -82,7 +83,7 @@ async function findOrCreateUser(profile) {
   const createdUser = await query(
     `INSERT INTO users (google_id, email, email_hash, name)
      VALUES ($1, $2, $3, $4)
-     RETURNING id, email, name, username`,
+     RETURNING id, google_id, email, name, username`,
     [profile.sub, encryptValue(profile.email), emailHash, (profile.name || profile.email).slice(0, 50)]
   );
 
@@ -116,7 +117,70 @@ export async function handleGoogleCallback(req, res, next) {
     const token = signAuthToken(user);
     setAuthCookie(res, token);
 
+    const ipHash = getIpHash(req);
+    const banned = await query(
+      `SELECT id
+       FROM ban_records
+       WHERE google_id = $1
+       OR ip_hash = $2
+       LIMIT 1`,
+      [user.google_id, ipHash]
+    );
+
+    if (banned.rowCount > 0) {
+      clearAuthCookie(res);
+      res.redirect(`${requireEnv('CLIENT_URL')}/login?error=suspended`);
+      return;
+    }
+
     res.redirect(`${requireEnv('CLIENT_URL')}/dashboard`);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function registerFingerprint(req, res, next) {
+  try {
+    const fingerprint = String(req.body?.fingerprint || '').trim();
+
+    if (!fingerprint) {
+      throw httpError(400, 'Fingerprint is required');
+    }
+
+    const fingerprintHash = hashValue(fingerprint);
+    const ipHash = getIpHash(req);
+    const userResult = await query(
+      `SELECT id, google_id
+       FROM users
+       WHERE id = $1`,
+      [req.user.id]
+    );
+
+    if (userResult.rowCount === 0) {
+      throw httpError(401, 'Unauthorized');
+    }
+
+    const user = userResult.rows[0];
+    const banned = await isBanned(user.google_id, ipHash, fingerprintHash, { query });
+
+    if (banned) {
+      clearAuthCookie(res);
+      throw httpError(
+        403,
+        'Your account has been suspended. Contact hello@fuelmychai.com to appeal.'
+      );
+    }
+
+    await query(
+      `INSERT INTO device_fingerprints (user_id, fingerprint_hash, ip_hash)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (user_id, fingerprint_hash) DO NOTHING`,
+      [user.id, fingerprintHash, ipHash]
+    );
+
+    res.status(200).json({
+      success: true
+    });
   } catch (error) {
     next(error);
   }
@@ -125,6 +189,7 @@ export async function handleGoogleCallback(req, res, next) {
 export async function getCurrentUser(req, res, next) {
   try {
     res.status(200).json({
+      success: true,
       user: req.user
     });
   } catch (error) {
@@ -136,6 +201,7 @@ export async function logout(req, res, next) {
   try {
     clearAuthCookie(res);
     res.status(200).json({
+      success: true,
       message: 'Logged out'
     });
   } catch (error) {
