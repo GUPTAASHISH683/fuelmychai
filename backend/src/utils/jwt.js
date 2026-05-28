@@ -31,7 +31,7 @@ export function verifyAuthToken(token) {
 export function setAuthCookie(res, token) {
   res.cookie(cookieName, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: true,
     sameSite: 'none',
     maxAge: sevenDaysMs
   });
@@ -40,7 +40,7 @@ export function setAuthCookie(res, token) {
 export function clearAuthCookie(res) {
   res.clearCookie(cookieName, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: true,
     sameSite: 'none'
   });
 }
