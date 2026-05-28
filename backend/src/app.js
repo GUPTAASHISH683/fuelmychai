@@ -39,5 +39,5 @@ app.use('/api/public', publicRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
-
+app.set('trust proxy', 1);
 export default app;
